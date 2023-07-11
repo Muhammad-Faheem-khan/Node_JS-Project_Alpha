@@ -100,6 +100,29 @@ exports.deletePost = async (req, res) => {
       }
 }
 
+exports.updatePost = async (req, res) => {
+    const {title, description, filename, contentType, data} = req.body
+    try {
+        const {id} = req.params
+        const post = await Post.findByIdAndUpdate(id, {
+            title,
+            description,
+            postBy: req.user,
+            image: {
+            filename,
+            contentType,
+            data: Buffer.from(data, 'base64'), 
+            }
+        },
+        {new: true}
+        );
+        res.send(post);
+      } catch (error) {
+        console.error('Failed to update course:', error);
+        res.status(500).send('An error occurred while updating the post');
+      }
+}
+
 exports.handleLikes = async (req, res) => {
     try {
         const {id} = req.params
